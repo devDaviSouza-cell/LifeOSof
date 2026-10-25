@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"><title>LifeOS</title>
+<meta name="description" content="LifeOS — painel pessoal de rotina, treino, xadrez, estudos e idiomas">
+<meta name="theme-color" content="#6D1834">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LifeOS"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--v:#6D1834;--bg:#FAF8F4;--be:#E8D8C3;--w:#fff;--k:#191616;--vd:#3B0D1C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#191616;--be:#3B0D1C;--w:#241d1d;--k:#FAF8F4;--v:#B8476B}}
+:root[data-theme=dark]{--bg:#191616;--be:#3B0D1C;--w:#241d1d;--k:#FAF8F4;--v:#B8476B}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--k);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+#app{max-width:640px;margin:0 auto;padding:16px 16px 100px}
+h1{font-size:36px;font-weight:900;text-transform:uppercase;letter-spacing:-1.5px;line-height:1;margin:8px 0 14px}
+h2{font-size:20px;font-weight:900;text-transform:uppercase;margin-bottom:8px}
+small,.mu{font-size:13px;opacity:.75}
+.card{border:3px solid var(--k);background:var(--w);padding:14px;margin:12px 0}
+.card.be{background:var(--be)}.card.vi{background:var(--v);color:#fff}
+.big{font-size:44px;font-weight:900;line-height:1}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.sp{justify-content:space-between}.row .nf{flex:none}
+button{font:inherit;font-weight:800;cursor:pointer;border:3px solid var(--k);min-height:48px;padding:0 14px;background:var(--w);color:var(--k)}
+button:active{transform:translate(2px,2px)}
+.b1{background:var(--v);color:#fff;box-shadow:3px 3px 0 var(--k)}.b2{box-shadow:3px 3px 0 var(--k)}.sm{min-height:40px;padding:0 10px;font-size:14px}
+.on{background:var(--k);color:var(--bg)}
+input,select,textarea{font:inherit;width:100%;min-height:48px;border:3px solid var(--k);background:var(--w);color:var(--k);padding:8px;border-radius:0}
+label{display:block;font-weight:800;font-size:13px;text-transform:uppercase;margin:10px 0 4px}
+.bar{height:16px;border:3px solid var(--k);background:var(--w);margin:8px 0}.bar i{display:block;height:100%;background:var(--v)}
+.ck{width:44px;min-width:44px;height:44px;padding:0;font-size:22px}.ck.d{background:var(--v);color:#fff}
+.it{display:flex;gap:10px;align-items:center;border-top:3px solid var(--k);padding:10px 0}.it:first-child{border-top:0}.it>div{flex:1;min-width:0;overflow-wrap:anywhere}
+.dn{display:flex;gap:8px;margin-bottom:8px}.dn input{flex:1}.dn button{min-width:52px}
+.tag{display:inline-block;background:var(--k);color:var(--bg);font-size:11px;font-weight:800;padding:1px 6px;text-transform:uppercase}
+.emp{border:3px dashed var(--k);padding:16px;margin:12px 0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}.chips button{flex:none}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg);border-top:3px solid var(--k);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{flex:1;border:0;box-shadow:none;min-height:58px;padding:0;font-size:10.5px;text-transform:uppercase;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+nav button b{font-size:20px;line-height:1}nav button.on{background:var(--v);color:#fff}
+.mo{position:fixed;inset:0;background:rgba(25,22,22,.7);display:flex;align-items:flex-end;z-index:20}
+.sh{background:var(--bg);border-top:4px solid var(--k);width:100%;max-width:640px;margin:0 auto;max-height:92dvh;overflow-y:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.er{color:var(--v);font-weight:800;margin:8px 0;min-height:1em}
+#t{position:fixed;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--k);color:var(--bg);padding:12px;font-weight:800;z-index:30;text-align:center}
+textarea.j{font:12px monospace;min-height:160px}
+@media (min-width:900px){nav{top:0;right:auto;width:150px;flex-direction:column;border-top:0;border-right:3px solid var(--k);justify-content:flex-start}#app{margin-left:170px;max-width:720px}#t{bottom:16px}}
+</style></head><body><div id="app"></div><nav id="nav"></nav><div id="t" hidden></div>
+<script>
+const K='lifeos.v1',$=s=>document.querySelector(s);
+const E=()=>({tasks:[],work:[],chess:[],subj:[],sess:[],goals:{day:60,week:300},langs:[],ls:[],words:[]});
+let S=(()=>{try{const r=localStorage.getItem(K);if(r)return Object.assign(E(),JSON.parse(r))}catch(e){}return E()})();
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('ERRO: não foi possível salvar neste navegador')}}
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const iso=t=>t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+const td=()=>iso(new Date()),dfmt=d=>d.split('-').reverse().join('/'),sh=d=>dfmt(d).slice(0,5);
+const addD=(d,n)=>{const t=new Date(d+'T12:00:00');t.setDate(t.getDate()+n);return iso(t)};
+const wk0=()=>addD(td(),-((new Date().getDay()+6)%7));
+const sum=(a,f)=>a.reduce((s,x)=>s+(Number(f(x))||0),0);
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const bar=p=>`<div class=bar><i style="width:${Math.min(100,p)}%"></i></div>`;
+const emp=m=>`<div class=emp>${m}</div>`;
+const card=(h,c='')=>`<div class="card ${c}">${h}</div>`;
+const Bt=(a,i,t,c='b2 sm')=>`<button class="${c}" data-a="${a}" data-i="${i}">${t}</button>`;
+const opt=(a)=>a.map(x=>[x,x]);
+let V='home',D=td(),LI=null,CS=null,CX=null,SB=null;
+function toast(m){const t=$('#t');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2500)}
+function modal(h){const m=document.createElement('div');m.className='mo';m.innerHTML=`<div class=sh>${h}</div>`;document.body.appendChild(m);return m}
+function ask(msg,cb){const m=modal(`<h2>Confirmar</h2><p>${msg}</p><div class=row style="margin-top:14px"><button data-x>Cancelar</button><button class=b1 data-y>Confirmar</button></div>`);m.onclick=e=>{if(e.target.matches('[data-x]')||e.target===m)m.remove();if(e.target.matches('[data-y]')){m.remove();cb()}}}
+function form(title,fields,val,cb){val=val||{};
+const drv=fields.find(f=>f.g);
+const m=modal(`<h2>${title}</h2><form novalidate>${fields.map(f=>{const v=val[f.k]??f.d??'';const i=f.t==='select'?`<select name=${f.k}>${f.o.map(([a,b])=>`<option value="${esc(a)}"${a==v?' selected':''}>${esc(b)}</option>`).join('')}</select>`:f.t==='textarea'?`<textarea name=${f.k} rows=3>${esc(v)}</textarea>`:`<input name=${f.k} type=${f.t||'text'} value="${esc(v)}" ${f.t=='number'?'step=any inputmode=decimal min=0':''}>`;return`<label data-k=${f.k}>${f.l}${f.r?' *':''}${i}</label>`}).join('')}<p class=er></p><div class=row><button type=button data-x>Cancelar</button><button class=b1>Salvar</button></div></form>`);
+const f=m.querySelector('form');
+const vis=()=>{if(!drv)return;const g=f.elements[drv.k].value;fields.forEach(x=>{if(x.s)f.querySelector(`[data-k=${x.k}]`).hidden=!x.s.includes(g)})};
+vis();if(drv)f.elements[drv.k].onchange=vis;
+f.addEventListener('focusin',e=>setTimeout(()=>e.target.scrollIntoView({block:'center'}),300));
+m.onclick=e=>{if(e.target.matches('[data-x]'))m.remove()};
+f.onsubmit=e=>{e.preventDefault();const d={};let err='';
+fields.forEach(x=>{const l=f.querySelector(`[data-k=${x.k}]`);if(l.hidden){d[x.k]='';return}let v=f.elements[x.k].value.trim();if(x.r&&!v)err=err||x.l+' é obrigatório';if(x.t==='number'&&v!==''){v=Number(v);if(isNaN(v)||v<0||(x.r&&v<=0))err=err||x.l+' inválido'}d[x.k]=v});
+if(err){f.querySelector('.er').textContent=err;return}cb(d);m.remove();save();render();toast('Salvo ✓')}}
+function chart(p){if(p.length<2)return'';const W=320,H=140,m=28,ys=p.map(a=>a.y),lo=Math.min(...ys),hi=Math.max(...ys),r=hi-lo||1;
+const X=i=>m+i*(W-m-10)/(p.length-1),Y=y=>H-26-(y-lo)/r*(H-50),tx=(x,y,t,a='start')=>`<text x=${x} y=${y} font-size=11 fill=currentColor text-anchor=${a}>${t}</text>`;
+return`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block"><line x1=${m} y1=${H-18} x2=${W-6} y2=${H-18} stroke=currentColor stroke-width=2 /><polyline fill=none style="stroke:var(--v)" stroke-width=3 points="${p.map((a,i)=>X(i)+','+Y(a.y)).join(' ')}"/>${p.map((a,i)=>`<circle cx=${X(i)} cy=${Y(a.y)} r=4 fill=currentColor />`).join('')}${tx(2,Y(hi)+4,hi)}${tx(2,Y(lo)+4,lo)}${tx(m,H-4,sh(p[0].x))}${tx(W-6,H-4,sh(p[p.length-1].x),'end')}</svg>`}
+// ===== CRUD config =====
+const PER=[['','—'],['Manhã','Manhã'],['Tarde','Tarde'],['Noite','Noite']];
+const TT=['Musculação','Corrida','Vôlei','Treino em casa'],PL=['Chess.com','Lichess','Outra'],MD=['Bullet','Blitz','Rápida','Clássica'];
+const LV=['A1','A2','B1','B2','C1','C2'],CAT=['Vocabulário','Gramática','Leitura','Escrita','Escuta','Conversação'],TH=['Aberturas','Tática','Estratégia','Finais','Análise de partidas'];
+const CF={
+tasks:{t:'Atividade',f:()=>[{k:'title',l:'Atividade',r:1},{k:'date',l:'Data',t:'date',r:1,d:D},{k:'time',l:'Horário',t:'time'},{k:'period',l:'Período',t:'select',o:PER},{k:'rec',l:'Repetir',t:'select',o:[['','Não'],['1','Todos os dias']]},{k:'note',l:'Observações',t:'textarea'}]},
+work:{t:'Treino',f:()=>[{k:'date',l:'Data',t:'date',r:1,d:td()},{k:'type',l:'Tipo',t:'select',o:opt(TT),g:1},{k:'name',l:'Exercício',r:1,s:['Musculação','Treino em casa']},{k:'sets',l:'Séries',t:'number',s:['Musculação','Treino em casa']},{k:'reps',l:'Repetições',t:'number',s:['Musculação','Treino em casa']},{k:'load',l:'Carga (kg)',t:'number',s:['Musculação']},{k:'dist',l:'Distância (km)',t:'number',s:['Corrida']},{k:'dur',l:'Duração (min)',t:'number',s:['Corrida','Vôlei','Treino em casa']},{k:'note',l:'Observações (dificuldade, desempenho)',t:'textarea'}]},
+chess:{t:'Registro de xadrez',f:()=>[{k:'date',l:'Data',t:'date',r:1,d:td()},{k:'kind',l:'Tipo',t:'select',o:[['Partida','Partida'],['Treino','Sessão de treino']],g:1},{k:'plat',l:'Plataforma',t:'select',o:opt(PL),s:['Partida']},{k:'mode',l:'Modalidade',t:'select',o:opt(MD),s:['Partida']},{k:'rating',l:'Rating',t:'number',r:1,s:['Partida']},{k:'result',l:'Resultado',t:'select',o:[['V','Vitória'],['E','Empate'],['D','Derrota']],s:['Partida']},{k:'theme',l:'Tema estudado',t:'select',o:opt(TH),s:['Treino']},{k:'note',l:'Observações',t:'textarea'}]},
+subj:{t:'Matéria',f:()=>[{k:'name',l:'Nome da matéria',r:1}]},
+sess:{t:'Sessão de estudo',f:()=>[{k:'date',l:'Data',t:'date',r:1,d:td()},{k:'min',l:'Duração (min)',t:'number',r:1},{k:'sid',l:'Matéria',t:'select',o:S.subj.length?S.subj.map(s=>[s.id,s.name]):[['','(sem matéria)']]},{k:'content',l:'Conteúdo estudado',r:1},{k:'note',l:'Observações / dificuldades',t:'textarea'}]},
+langs:{t:'Idioma',f:()=>[{k:'name',l:'Idioma',r:1},{k:'level',l:'Nível atual (CEFR)',t:'select',o:opt(LV)},{k:'target',l:'Meta (CEFR)',t:'select',o:opt(LV),d:'B2'},{k:'wk',l:'Meta semanal (min)',t:'number'}]},
+ls:{t:'Sessão de idioma',f:()=>[{k:'date',l:'Data',t:'date',r:1,d:td()},{k:'min',l:'Duração (min)',t:'number',r:1},{k:'cat',l:'Atividade',t:'select',o:opt(CAT)},{k:'note',l:'Observações',t:'textarea'}]},
+words:{t:'Palavra / expressão',f:()=>[{k:'term',l:'Termo',r:1},{k:'meaning',l:'Significado',r:1},{k:'example',l:'Exemplo de uso'},{k:'note',l:'Observação pessoal'}]}};
+const A={
+inst:()=>{if(!window.DP)return;DP.prompt();DP.userChoice.then(()=>{window.DP=null;render()})},
+go:i=>{V=i;scrollTo(0,0);render()},
+add:i=>form(CF[i].t,CF[i].f(),{},d=>{d.id=uid();if(i=='ls'||i=='words')d.lid=LI;S[i].push(d)}),
+ed:i=>{const[c,id]=i.split(':'),o=S[c].find(x=>x.id===id);form(CF[c].t,CF[c].f(),o,d=>Object.assign(o,d))},
+del:i=>{const[c,id]=i.split(':');ask('Excluir este registro? Não é possível desfazer.',()=>{S[c]=S[c].filter(x=>x.id!==id);if(c=='subj')S.sess.forEach(s=>{if(s.sid==id)s.sid=''});if(c=='langs'){S.ls=S.ls.filter(x=>x.lid!==id);S.words=S.words.filter(x=>x.lid!==id);LI=null}save();render()})},
+tg:i=>{const t=S.tasks.find(x=>x.id===i);t.done=t.done||{};t.done[D]=!t.done[D];save();render()},
+dd:i=>{D=addD(D,+i);render()},
+at:i=>{const[s,p]=i.split(':');form(p?'Subtópico':'Tópico',[{k:'name',l:'Nome',r:1}],{},d=>{S.subj.find(x=>x.id===s).tp.push({id:uid(),name:d.name,st:0,p:p||''})})},
+et:i=>{const[s,t]=i.split(':'),o=S.subj.find(x=>x.id===s).tp.find(x=>x.id===t);form('Editar tópico',[{k:'name',l:'Nome',r:1}],o,d=>Object.assign(o,d))},
+dt:i=>{const[s,t]=i.split(':');ask('Excluir tópico e seus subtópicos?',()=>{const o=S.subj.find(x=>x.id===s);o.tp=o.tp.filter(x=>x.id!==t&&x.p!==t);save();render()})},
+st:i=>{const[s,t]=i.split(':'),o=S.subj.find(x=>x.id===s).tp.find(x=>x.id===t);o.st=(o.st+1)%3;save();render()},
+goal:()=>form('Metas de estudo',[{k:'day',l:'Meta diária (min)',t:'number',r:1,d:S.goals.day},{k:'week',l:'Meta semanal (min)',t:'number',r:1,d:S.goals.week}],S.goals,d=>{S.goals={day:d.day,week:d.week}}),
+li:i=>{LI=i;render()},cs:i=>{CS=i;render()},cx:i=>{CX=i;render()},
+exp:()=>{const j=JSON.stringify({app:'LifeOS',v:1,data:S},null,1);const m=modal(`<h2>Exportar backup</h2><p class=mu>Copie o texto abaixo e guarde (notas, e-mail, nuvem). O botão Baixar pode não funcionar dentro desta página.</p><textarea class=j readonly>${esc(j)}</textarea><div class=row style="margin-top:10px"><button data-x>Fechar</button><button data-d>Baixar</button><button class=b1 data-c>Copiar</button></div>`);
+m.onclick=e=>{const t=e.target;if(t.matches('[data-x]'))m.remove();if(t.matches('[data-c]')){m.querySelector('textarea').select();try{navigator.clipboard.writeText(j).then(()=>toast('Copiado ✓'),()=>{document.execCommand('copy');toast('Copiado ✓')})}catch(x){document.execCommand('copy');toast('Copiado ✓')}}
+if(t.matches('[data-d]')){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([j],{type:'application/json'}));a.download='lifeos-backup-'+td()+'.json';a.click()}}},
+imp:()=>{const m=modal(`<h2>Importar backup</h2><p class=mu>Cole o JSON exportado ou escolha o arquivo. O arquivo é validado antes; seus dados atuais só são substituídos após confirmação.</p><input type=file accept=".json,application/json"><label>Ou cole aqui</label><textarea class=j></textarea><p class=er></p><div class=row><button data-x>Cancelar</button><button class=b1 data-i>Validar e importar</button></div>`);
+const ta=m.querySelector('textarea');m.querySelector('input').onchange=e=>{const r=new FileReader();r.onload=()=>ta.value=r.result;r.readAsText(e.target.files[0])};
+m.onclick=e=>{if(e.target.matches('[data-x]'))m.remove();if(e.target.matches('[data-i]')){let d;try{d=JSON.parse(ta.value).data}catch(x){}const ok=d&&typeof d=='object'&&['tasks','work','chess','subj','sess','langs','ls','words'].every(k=>Array.isArray(d[k]))&&d.goals&&typeof d.goals=='object';
+if(!ok){m.querySelector('.er').textContent='Arquivo inválido: não é um backup do LifeOS.';return}
+ask(`Substituir TODOS os dados atuais pelo backup? (${d.tasks.length} tarefas, ${d.work.length} treinos, ${d.chess.length} registros de xadrez, ${d.subj.length} matérias, ${d.langs.length} idiomas)`,()=>{S=Object.assign(E(),d);save();m.remove();LI=null;render();toast('Backup importado ✓')})}}}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)A[b.dataset.a](b.dataset.i)});
+document.addEventListener('change',e=>{const c=e.target.dataset.c;if(c=='dt'&&e.target.value){D=e.target.value;render()}if(c=='ex'){CX=e.target.value;render()}if(c=='sb'){SB=e.target.value;render()}});
+// ===== helpers =====
+const tasksOn=d=>S.tasks.filter(t=>t.date===d||(t.rec&&d>=t.date));
+const isD=(t,d)=>!!(t.done&&t.done[d]);
+const hist=(arr,fn)=>{const g={};[...arr].sort((a,b)=>b.date.localeCompare(a.date)).forEach(x=>(g[x.date]=g[x.date]||[]).push(x));return Object.keys(g).map(d=>`<h2 style="margin-top:14px">${dfmt(d)}</h2>`+card(g[d].map(fn).join(''))).join('')};
+const acts=(c,id)=>Bt('ed',c+':'+id,'Editar')+Bt('del',c+':'+id,'Excluir');
+const addB=(c,t)=>`<button class="b1" style="width:100%;margin:6px 0" data-a=add data-i=${c}>+ ${t}</button>`;
+const series=()=>{const g={};S.chess.filter(x=>x.kind=='Partida'&&x.rating!=='').sort((a,b)=>a.date.localeCompare(b.date)).forEach(x=>(g[x.plat+' · '+x.mode]=g[x.plat+' · '+x.mode]||[]).push(x));return g};
+const sp=s=>{const t=S.subj.find(x=>x.id==s.sid);return t?t.name:''};
+const subjP=s=>{const t=s.tp||[];return[t.filter(x=>x.st==2).length,t.length]};
+// ===== views =====
+function vHome(){const L=tasksOn(td()),dn=L.filter(t=>isD(t,td())).length,w7=S.work.filter(x=>x.date>addD(td(),-7)),se=series(),ks=Object.keys(se);
+const ws=wk0(),smin=sum(S.sess.filter(x=>x.date>=ws),x=>x.min),tm=sum(S.sess.filter(x=>x.date==td()),x=>x.min);
+let st=0,tot=0;S.subj.forEach(s=>{const[a,b]=subjP(s);st+=a;tot+=b});
+const lmin=sum(S.ls.filter(x=>x.date>=ws),x=>x.min),ld=new Set(S.ls.filter(x=>x.date>=ws).map(x=>x.date)).size;
+return`<small>${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</small><h1>LifeOS</h1>`+
+card(`<h2>Hoje</h2>`+(L.length?`<div class=big>${pct(dn,L.length)}%</div>${bar(pct(dn,L.length))}<small style="color:inherit">${dn} de ${L.length} tarefas concluídas</small>`:`<p>Nenhuma atividade registrada para hoje.</p>`)+`<div style="margin-top:10px">${Bt('go','diario',L.length?'Abrir diário':'Criar primeira atividade','b2 sm')}</div>`,'vi')+
+card(`<h2>Treino</h2>`+(S.work.length?`<p><b>${new Set(w7.map(x=>x.date)).size}</b> dia(s) com treino nos últimos 7 dias</p><small>Último: ${dfmt([...S.work].sort((a,b)=>b.date.localeCompare(a.date))[0].date)}</small>`:`<p>Nenhum treino registrado ainda.</p>`)+`<div style="margin-top:10px">${Bt('go','treino','Abrir treino')}</div>`)+
+card(`<h2>Xadrez</h2>`+(ks.length?ks.slice(0,3).map(k=>{const r=se[k],l=r[r.length-1].rating,d=r.length>1?l-r[r.length-2].rating:null;return`<div class="row sp"><span>${esc(k)}</span><b class=nf>${l}${d!==null?` (${d>0?'+':''}${d})`:''}</b></div>`}).join(''):`<p>Sem ratings. Cadastre sua primeira partida.</p>`)+`<div style="margin-top:10px">${Bt('go','xadrez','Abrir xadrez')}</div>`)+
+card(`<h2>Estudos</h2>`+(tot?`<div class=big>${pct(st,tot)}%</div>${bar(pct(st,tot))}`:`<p>Nenhuma matéria com tópicos.</p>`)+`<p>Hoje: <b>${tm}</b>/${S.goals.day} min · Semana: <b>${smin}</b>/${S.goals.week} min</p>`+bar(pct(smin,S.goals.week))+`<div style="margin-top:6px">${Bt('go','estudos','Abrir estudos')}</div>`,'be')+
+card(`<h2>Idiomas</h2>`+(S.langs.length?`<p><b>${lmin}</b> min e <b>${ld}</b> dia(s) de estudo nesta semana</p>`:`<p>Nenhum idioma cadastrado.</p>`)+`<div style="margin-top:10px">${Bt('go','idiomas','Abrir idiomas')}</div>`)+
+(window.DP?card(`<h2>Instalar</h2><p class=mu>Adicione o LifeOS à tela inicial.</p><button class=b1 style="margin-top:10px;width:100%" data-a=inst>Instalar app</button>`):'')+card(`<h2>Dados e backup</h2><p class=mu>Seus dados ficam salvos <b>somente neste navegador</b> (localStorage). Não há sincronização entre aparelhos. Limpar os dados do navegador ou desinstalar o app pode apagar tudo — faça backups regularmente. ${window.PS===true?'Armazenamento protegido pelo navegador: sim.':window.PS===false?'Armazenamento protegido pelo navegador: não (o Chrome pode apagá-lo se faltar espaço).':''}</p><div class=row style="margin-top:10px"><button data-a=exp>Exportar</button><button data-a=imp>Importar</button></div>`,'be')}
+function vDiario(){const L=tasksOn(D).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99')),dn=L.filter(t=>isD(t,D)),pe=L.filter(t=>!isD(t,D)),p=pct(dn.length,L.length);
+const row=t=>`<div class=it><button class="ck ${isD(t,D)?'d':''}" data-a=tg data-i=${t.id} aria-label="Concluir">${isD(t,D)?'✓':''}</button><div><b>${esc(t.title)}</b> ${t.rec?'<span class=tag>diária</span>':''}<br><small>${[t.period,t.time].filter(Boolean).join(' · ')}</small>${t.note?`<br><small>${esc(t.note)}</small>`:''}<div class=row style="margin-top:6px">${acts('tasks',t.id)}</div></div></div>`;
+return`<h1>Diário</h1><div class=dn><button data-a=dd data-i=-1>◀</button><input type=date value=${D} data-c=dt><button data-a=dd data-i=1>▶</button></div>`+
+(L.length?card(`<div class=big>${p}%</div>${bar(p)}<small style="color:inherit">${dn.length} concluída(s) · ${pe.length} pendente(s)</small>`,'vi'):emp('Ainda não existem atividades registradas para '+dfmt(D)+'.'))+addB('tasks','Nova atividade')+
+(pe.length?`<h2 style="margin-top:14px">Pendentes</h2>`+card(pe.map(row).join('')):'')+(dn.length?`<h2 style="margin-top:14px">Concluídas</h2>`+card(dn.map(row).join(''),'be'):'')}
+function vTreino(){const ws=wk0(),wk=S.work.filter(x=>x.date>=ws),d30=S.work.filter(x=>x.date>addD(td(),-30)),days=new Set(d30.map(x=>x.date)).size;
+const ex={};S.work.forEach(x=>{if(x.type=='Musculação'&&x.load>0)ex['Carga: '+x.name]=1;if(x.type=='Corrida'&&x.dist>0)ex['Distância (corrida)']=1;if(x.type=='Corrida'&&x.dur>0)ex['Duração (corrida)']=1});
+const ek=Object.keys(ex);if(!CX||!ex[CX])CX=ek[0];let pts=[];
+if(CX){const m={};S.work.forEach(x=>{let y=null;if(CX=='Distância (corrida)'&&x.type=='Corrida')y=x.dist;else if(CX=='Duração (corrida)'&&x.type=='Corrida')y=x.dur;else if(CX=='Carga: '+x.name&&x.type=='Musculação')y=x.load;if(y>0)m[x.date]=Math.max(m[x.date]||0,y)});pts=Object.keys(m).sort().map(d=>({x:d,y:m[d]}))}
+return`<h1>Treino</h1>`+addB('work','Registrar treino')+
+(S.work.length?card(`<h2>Esta semana</h2><div class=row><div><div class=big>${new Set(wk.map(x=>x.date)).size}</div><small>dias</small></div><div><div class=big>${sum(wk,x=>x.dur)}</div><small>min</small></div><div><div class=big>${+sum(wk,x=>x.dist).toFixed(1)}</div><small>km</small></div></div><hr style="margin:12px 0;border:2px solid var(--k)"><p>Últimos 30 dias: <b>${days}</b> dia(s) com treino (${pct(days,30)}% de consistência)</p>${bar(pct(days,30))}`,'be')+
+(ek.length?card(`<h2>Evolução</h2><select data-c=ex>${ek.map(k=>`<option ${k==CX?'selected':''}>${esc(k)}</option>`).join('')}</select><div style="margin-top:8px">${pts.length>1?chart(pts):'<p class=mu>Registre pelo menos 2 datas para ver o gráfico.</p>'}</div>`):'')+
+`<h2 style="margin-top:14px">Histórico</h2>`+hist(S.work,x=>`<div class=it><div><span class=tag>${x.type}</span> <b>${esc(x.name||'')}</b><br><small>${[x.sets&&x.reps?x.sets+'×'+x.reps:(x.sets||x.reps?(x.sets||x.reps):''),x.load?x.load+' kg':'',x.dist?x.dist+' km':'',x.dur?x.dur+' min':''].filter(Boolean).join(' · ')}</small>${x.note?`<br><small>${esc(x.note)}</small>`:''}<div class=row style="margin-top:6px">${acts('work',x.id)}</div></div></div>`):emp('Nenhum treino registrado. Toque em “Registrar treino” para começar.'))}
+function vXadrez(){const se=series(),ks=Object.keys(se);if(!CS||!se[CS])CS=ks[0];
+const st=ks.map(k=>{const r=S.chess.filter(x=>x.kind=='Partida'&&x.plat+' · '+x.mode==k),c=q=>r.filter(x=>x.result==q).length,l=se[k];return`<div class=it><div><b>${esc(k)}</b><br><small>${c('V')}V · ${c('E')}E · ${c('D')}D (${r.length} partidas) · rating atual ${l[l.length-1].rating}</small></div></div>`}).join('');
+return`<h1>Xadrez</h1>`+addB('chess','Registrar partida ou treino')+
+(ks.length?card(`<h2>Progressão</h2><div class=chips>${ks.map(k=>`<button class="sm ${k==CS?'on':''}" data-a=cs data-i="${esc(k)}">${esc(k)}</button>`).join('')}</div>${se[CS].length>1?chart(se[CS].map(x=>({x:x.date,y:x.rating}))):'<p class=mu>Registre mais uma partida nesta plataforma/modalidade para ver o gráfico.</p>'}`)+card(`<h2>Resultados</h2>${st}`,'be'):emp('Sem ratings registrados. Cadastre sua primeira partida (com rating) para ver o gráfico e as estatísticas. Cada plataforma/modalidade tem série própria.'))+
+(S.chess.length?`<h2 style="margin-top:14px">Histórico</h2>`+hist(S.chess,x=>`<div class=it><div><span class=tag>${x.kind}</span> ${x.kind=='Partida'?`<b>${esc(x.plat)} · ${x.mode}</b> — ${{V:'Vitória',E:'Empate',D:'Derrota'}[x.result]} · ${x.rating}`:`<b>${esc(x.theme)}</b>`}${x.note?`<br><small>${esc(x.note)}</small>`:''}<div class=row style="margin-top:6px">${acts('chess',x.id)}</div></div></div>`):'')}
+function vEstudos(){const ws=wk0(),tm=sum(S.sess.filter(x=>x.date==td()),x=>x.min),wm=sum(S.sess.filter(x=>x.date>=ws),x=>x.min);let a=0,b=0,n=0,e=0;S.subj.forEach(s=>{const[x,y]=subjP(s);a+=x;b+=y;(s.tp||[]).forEach(t=>t.st==1?n++:t.st==0?e++:0)});
+const SN=['Não iniciado','Em andamento','Concluído'];
+const tp=(s,t,ind)=>`<div class=it style="margin-left:${ind*18}px"><button class="sm ${t.st==2?'b1':t.st==1?'on':''}" style="min-width:104px;font-size:12px" data-a=st data-i="${s.id}:${t.id}">${SN[t.st]}</button><div><b>${esc(t.name)}</b><div class=row style="margin-top:4px">${ind?'':Bt('at',s.id+':'+t.id,'+ Sub')}${Bt('et',s.id+':'+t.id,'Editar')}${Bt('dt',s.id+':'+t.id,'Excluir')}</div></div></div>`;
+return`<h1>Estudos</h1>`+card(`<div class="row sp"><h2 style="margin:0">Metas</h2><button class="sm nf" data-a=goal>Editar</button></div><p>Hoje: <b>${tm}</b>/${S.goals.day} min</p>${bar(pct(tm,S.goals.day))}<p>Semana: <b>${wm}</b>/${S.goals.week} min</p>${bar(pct(wm,S.goals.week))}`,'be')+
+(b?card(`<h2>Progresso geral</h2><div class=big>${pct(a,b)}%</div>${bar(pct(a,b))}<small style="color:inherit">${a} estudado(s) · ${n} em andamento · ${e} a estudar</small>`,'vi'):'')+
+addB('subj','Nova matéria')+(S.subj.length?S.subj.map(s=>{const t=s.tp=s.tp||[],[x,y]=subjP(s);return card(`<div class="row sp"><h2 style="margin:0">${esc(s.name)}</h2><b class=nf>${pct(x,y)}%</b></div>${bar(pct(x,y))}${t.length?t.filter(q=>!q.p).map(q=>tp(s,q,0)+t.filter(c=>c.p==q.id).map(c=>tp(s,c,1)).join('')).join(''):'<p class=mu>Sem tópicos.</p>'}<div class=row style="margin-top:8px">${Bt('at',s.id+':','+ Tópico','b1 sm')}${acts('subj',s.id)}</div>`)}).join(''):emp('Nenhuma matéria cadastrada. Crie uma matéria e adicione seus tópicos.'))+
+`<h2 style="margin-top:14px">Sessões</h2>`+addB('sess','Registrar sessão')+(S.sess.length?hist(S.sess,x=>`<div class=it><div><b>${x.min} min</b> ${sp(x)?`<span class=tag>${esc(sp(x))}</span>`:''}<br>${esc(x.content)}${x.note?`<br><small>${esc(x.note)}</small>`:''}<div class=row style="margin-top:6px">${acts('sess',x.id)}</div></div></div>`):emp('Nenhuma sessão registrada.'))}
+function vIdiomas(){if(!S.langs.find(l=>l.id==LI))LI=S.langs[0]?.id;const l=S.langs.find(x=>x.id==LI);
+let h=`<h1>Idiomas</h1>`+(S.langs.length?`<div class=chips>${S.langs.map(x=>`<button class="sm ${x.id==LI?'on':''}" data-a=li data-i=${x.id}>${esc(x.name)}</button>`).join('')}</div>`:'')+addB('langs','Novo idioma');
+if(!l)return h+emp('Nenhum idioma cadastrado. Adicione um idioma, seu nível atual e sua meta.');
+const ss=S.ls.filter(x=>x.lid==l.id),ws=wk0(),wm=sum(ss.filter(x=>x.date>=ws),x=>x.min),d30=new Set(ss.filter(x=>x.date>addD(td(),-30)).map(x=>x.date)).size,wd=S.words.filter(x=>x.lid==l.id);
+const cc={};ss.forEach(x=>cc[x.cat]=(cc[x.cat]||0)+1);const mx=Math.max(1,...Object.values(cc));
+return h+card(`<div class="row sp"><h2 style="margin:0">${esc(l.name)}</h2><div class=nf>${acts('langs',l.id)}</div></div><div class=big>${l.level} → ${l.target}</div><small style="color:inherit">Níveis definidos manualmente por você (não é avaliação oficial).</small>`,'vi')+
+card(`<h2>Semana</h2><p><b>${wm}</b>${l.wk?'/'+l.wk:''} min</p>${l.wk?bar(pct(wm,l.wk)):'<p class=mu>Defina uma meta semanal editando o idioma.</p>'}<p>Últimos 30 dias: <b>${d30}</b> dia(s) de estudo · total <b>${sum(ss,x=>x.min)}</b> min</p>`,'be')+
+(ss.length?card(`<h2>Atividades mais praticadas</h2>${Object.keys(cc).sort((a,b)=>cc[b]-cc[a]).map(k=>`<div class="row sp"><span>${k}</span><b class=nf>${cc[k]}</b></div>${bar(pct(cc[k],mx))}`).join('')}`):'')+
+`<h2 style="margin-top:14px">Sessões</h2>`+addB('ls','Registrar sessão')+(ss.length?hist(ss,x=>`<div class=it><div><b>${x.min} min</b> <span class=tag>${x.cat}</span>${x.note?`<br><small>${esc(x.note)}</small>`:''}<div class=row style="margin-top:6px">${acts('ls',x.id)}</div></div></div>`):emp('Nenhuma sessão neste idioma.'))+
+`<h2 style="margin-top:14px">Palavras e expressões</h2>`+addB('words','Nova palavra')+(wd.length?card(wd.map(x=>`<div class=it><div><b>${esc(x.term)}</b> — ${esc(x.meaning)}${x.example?`<br><small><i>${esc(x.example)}</i></small>`:''}${x.note?`<br><small>${esc(x.note)}</small>`:''}<div class=row style="margin-top:6px">${acts('words',x.id)}</div></div></div>`).join('')):emp('Nenhuma palavra salva.'))}
+const TABS=[['home','Início','◼'],['diario','Diário','☰'],['treino','Treino','↯'],['xadrez','Xadrez','♞'],['estudos','Estudos','✎'],['idiomas','Idiomas','A']];
+const VW={home:vHome,diario:vDiario,treino:vTreino,xadrez:vXadrez,estudos:vEstudos,idiomas:vIdiomas};
+function render(){$('#app').innerHTML=VW[V]();$('#nav').innerHTML=TABS.map(t=>`<button class="${V==t[0]?'on':''}" data-a=go data-i=${t[0]}><b>${t[2]}</b>${t[1]}</button>`).join('')}
+render();
+// ===== PWA =====
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.DP=e;if(V=='home')render()});
+window.addEventListener('appinstalled',()=>{window.DP=null;render();toast('LifeOS instalado ✓')});
+try{if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().then(()=>navigator.storage.persisted()).then(p=>{window.PS=p;if(V=='home')render()})}}catch(e){}
+if('serviceWorker' in navigator&&location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(e=>console.warn('SW:',e)))}
+</script></body></html>
